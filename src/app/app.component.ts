@@ -2,9 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { produtos,table1,table2,table3,table4,table5,table6 } from './mock-tables';
-import { ProtheusLibCoreModule, ProUserInfo } from '@totvs/protheus-lib-core';
-import { ProAppConfigService, ProThreadInfoService, ProAdapterListInterface, ProAdapterBaseV2, ProAdapterQueryInterface, ProBranchService, ProBranchList } from '@totvs/protheus-lib-core';
+import { produtos, table1, table2, table3, table4, table5, table6 } from './mock-tables';
 
 export interface TableItem {
   produto: string;
@@ -33,7 +31,7 @@ export interface Table8Item {
 })
 export class AppComponent implements OnInit {
   title = 'acp-orcamento';
-  tables: TableItem[][] = [table1, table2, table3, table4, table5]; 
+  tables: TableItem[][] = [table1, table2, table3, table4, table5];
   produtos: Table8Item[] = produtos;
 
   selectedTable8Index: number = 0;
@@ -48,19 +46,13 @@ export class AppComponent implements OnInit {
   filteredTables: TableItem[][] = [];
 
 
-  constructor(private http: HttpClient,
-    private proAppConfigService: ProAppConfigService,
-    private proThreadInfoService: ProThreadInfoService,
-    private proBranchService: ProBranchService
+  constructor(private http: HttpClient
   ) {
-    if (!this.proAppConfigService.insideProtheus()) {
-      this.proAppConfigService.loadAppConfig();
-      sessionStorage.setItem("insideProtheus", "0");
-      sessionStorage.setItem("ERPTOKEN", '{"access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InBKd3RQdWJsaWNLZXlGb3IyNTYifQ.eyJpc3MiOiJUT1RWUy1BRFZQTC1GV0pXVCIsInN1YiI6ImRhbmllbC5hdGlsaW8iLCJpYXQiOjE3MjI5NDIwMTgsInVzZXJpZCI6IjAwMDAwMyIsImV4cCI6MTcyMjk0NTYxOCwiZW52SWQiOiJQUk9USEVVUyJ9.BAHBN2yYwJ8MBtLa8KYMA3K6q73zRuLognoLP42OiebwzmWQdhdgeTrcLgROiJ7ygtHSFFswa2EXRTEIeH87FZfZOr-OztVtNNch0QXl9E2575vqBFJAdfWgcqBzjfYcVrHvrAU2lfrlYqWt88VHhe4_7cZEsP0pJuHDbPa_w4nvORNVipKCiO0bAZhysJbpi2pJ67IjFIaE5PM6YuZmpbYsRyAj4eJ9ZkFdGO7DxYI5V5ENftyBKOYprwbCt0XlNxcF2bkZsnU8McPXWBBi-fvx-t6FaVuvOMQVwY8bq7495j8cryNY4iF5u_HrufoFvfe9uhNX83971n04LkUjQw","refresh_token": "ebbLIvUOXDSG-NQizmlBzUEB.bqXuLtkjSz6F0cNq4H8EgH8484gSk17_1bnm6odXXh0f9CjJAQxZ0pBqm4_S0wGQKHCpLFnbMygMDi33lMReQObOvwN9jBGmTeC3cYESR_0LYCwYiiLDH9W-fw24qXi7F18F8co866c5KkwOmQVbeX1CF22eVCWT8EmjRvOF2wp5cIpSyuuuaOnkkNT_3tCziR7KVAET4yHjZ_0qFfw8yzDA.BgC_0FQVaNGIzUpv7cmUBVJI7LU58Oolri7UaqBDFd7jpbtYmyBzY8CxRkTFKITTfZ0vT7xEndkfE7osp_cRfONAfe54hln-3EmrjpZDPCWdg2-N2KP9XDnn8mDNderpxJKO3-fYiPEWVAgH8QUC5EdMmMWggSWFdmmJZNP9-aQ70KbnNeR0TpOg2kLcCGzK9GBILRuFWSD9uqnIBMUJDtw55QkIeRYk2oZK6nlX17SjJd_uK5kcFA7cGSDwK1wQvO0JLKsPa0YhbHrEtKbFH7PLaxoXzi4Jg6xB6n0fqAv0tGxs_1ZlkxUdXel4bc7TDYe8SpiIaw0kSZHFVUIg7A","scope": "default","token_type": "Bearer","expires_in": 3600}');
-    }
-    else {
-      sessionStorage.setItem("insideProtheus", "1");
-    }
+    // Initialize selectedItemsByTable8 with empty arrays for each Table 8 item
+    this.selectedItemsByTable8 = this.produtos.reduce((acc, _, index) => {
+      acc[index] = [];
+      return acc;
+    }, {} as { [key: number]: TableItem[] });
   }
 
   ngOnInit() {
@@ -177,7 +169,7 @@ export class AppComponent implements OnInit {
     if (confirm('Tem certeza que deseja sair e salva ACP?')) {
       this.closeApp();
     }
-    
+
   }
   onCancelar() {
     if (confirm('Tem certeza que deseja sair e não salvar ACP?')) {
@@ -186,11 +178,11 @@ export class AppComponent implements OnInit {
   }
 
   closeApp() {
-    if (this.proAppConfigService.insideProtheus()) {
-      this.proAppConfigService.callAppClose();
-    } else {
-      alert("Clique não veio do Protheus");
-    }
+    // Logic to close the app, e.g., navigate to a different route or close the window
+    // For example, if using Angular Router:
+    // this.router.navigate(['/home']);
+    // Or if you want to close the window:
+    window.close();
   }
 
 
