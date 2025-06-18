@@ -4,7 +4,8 @@ This project is an Angular-based UI for managing technical and commercial propos
 
 ---
 
-![ACP Orçamento UI Screenshot](./screenshot.png)
+![Uploading image.png…]()
+
 
 ---
 
