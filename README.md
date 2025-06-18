@@ -1,27 +1,50 @@
-# AcpOrcamento
+# ACP Orçamento UI
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.12.
+This project is an Angular-based UI for managing technical and commercial proposals (ACPs). It features a modern, responsive layout and a workflow for selecting products and related items, with a summary table for aggregated selections.
 
-## Development server
+---
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+![ACP Orçamento UI Screenshot](./screenshot.png)
 
-## Code scaffolding
+---
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Features
+- **Produtos Table:** List and select products for the proposal.
+- **6 Linked Tables:** Each product shows related options (e.g., Embalagem, Químicos, Logística, etc.).
+- **ACPs Table:** Aggregates all selected items for the proposal.
+- **Global Search:** Quickly filter all left-side tables (except ACPs) with accent-insensitive search.
+- **Responsive Layout:** Clean, Protheus-inspired design with sticky headers and soft shadows.
+- **Selection Logic:** Per-product selection, with aggregation in the ACPs table.
+- **Mock Data:** All tables use realistic mock data for easy testing and demonstration.
 
-## Build
+## How It Works
+1. **Select a Product:** Click a row in the Produtos table.
+2. **Select Related Items:** Use the checkboxes in the 6 tables below to select options for the chosen product.
+3. **Review ACPs:** The right-side ACPs table shows all selected items for the current proposal.
+4. **Search:** Use the search bar to filter items in all left tables (except ACPs).
+5. **Confirm:** Click 'Confirmar' to finalize your selections.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Project Structure
+- `src/app/app.component.ts` — Main component logic
+- `src/app/app.component.html` — UI layout
+- `src/app/app.component.css` — Styles (Protheus palette)
+- `src/app/mock-tables.ts` — Mock data for all tables
 
-## Running unit tests
+## Running the Project
+1. Install dependencies:
+   ```sh
+   npm install
+   ```
+2. Start the development server:
+   ```sh
+   npm start
+   ```
+3. Open your browser at [http://localhost:4200](http://localhost:4200)
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Notes
+- No backend is required; all data is mocked.
+- The UI is fully responsive and works in modern browsers.
+- For SSR or Protheus integration, see comments in the code.
 
-## Running end-to-end tests
+---
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
