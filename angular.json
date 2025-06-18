@@ -13,7 +13,10 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/acp-orcamento",
+            "outputPath": {
+              "base": "dist/acp-orcamento",
+              "browser": ""
+            },
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -27,15 +30,10 @@
               }
             ],
             "styles": [
-              "./node_modules/@po-ui/style/css/po-theme-default.min.css",
+              "./node_modules/@po-ui/style/css/po-theme-core.min.css",
               "src/styles.css"
             ],
-            "scripts": [],
-            "server": "src/main.server.ts",
-            "prerender": true,
-            "ssr": {
-              "entry": "server.ts"
-            }
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -43,12 +41,12 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumError": "3MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kB",
-                  "maximumError": "4kB"
+                  "maximumWarning": "8kB",
+                  "maximumError": "10kB"
                 }
               ],
               "outputHashing": "all"
@@ -91,7 +89,9 @@
               }
             ],
             "styles": [
-              "./node_modules/@po-ui/style/css/po-theme-default.min.css",
+              "node_modules/@totvs/po-theme/css/po-theme-default-variables.min.css",
+              "node_modules/@totvs/po-theme/css/po-theme-default.min.css",
+              "node_modules/@po-ui/style/css/po-theme-core.min.css",
               "src/styles.css"
             ],
             "scripts": []

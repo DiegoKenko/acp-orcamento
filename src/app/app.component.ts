@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { produtos, table1, table2, table3, table4, table5, table6 } from './mock-tables';
+import { ProtheusLibCoreModule, ProAppConfigService } from '@totvs/protheus-lib-core';
 
 export interface TableItem {
   produto: string;
@@ -25,7 +26,7 @@ export interface Table8Item {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, FormsModule],
+  imports: [CommonModule, FormsModule, ProtheusLibCoreModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -45,17 +46,15 @@ export class AppComponent implements OnInit {
   globalSearch: string = '';
   filteredTables: TableItem[][] = [];
 
-
-  constructor(private http: HttpClient
-  ) {
-    // Initialize selectedItemsByTable8 with empty arrays for each Table 8 item
-    this.selectedItemsByTable8 = this.produtos.reduce((acc, _, index) => {
-      acc[index] = [];
-      return acc;
-    }, {} as { [key: number]: TableItem[] });
+  constructor(private proAppConfigService: ProAppConfigService) {
+    if (!this.proAppConfigService.insideProtheus()) {
+      this.proAppConfigService.loadAppConfig();
+    }
   }
 
   ngOnInit() {
+
+
     this.filteredTables = this.tables.map(table => [...table]);
   }
 
@@ -166,7 +165,7 @@ export class AppComponent implements OnInit {
   }
 
   onConfirmar() {
-    if (confirm('Tem certeza que deseja sair e salva ACP?')) {
+    if (confirm('Tem certeza que deseja sair e salvar ACP?')) {
       this.closeApp();
     }
 
