@@ -261,15 +261,14 @@ body, html, .app-layout, .app-table-box, .app-right-table, .global-search-bar, .
 }
 
 .table8-col-produto {
-  width: 30%;
+  min-width: 30%;
+  max-width: 50%;
 }
 
-.table8-col-quantidade {
-  width: 15%;
-}
-
-.table8-col-data {
-  width: 55%;
+.table8-col-id {
+  width: 30px;
+  max-width: 40px;
+  text-align: center;
 }
 
 /* Prevent horizontal scrollbars unless absolutely necessary */
@@ -605,5 +604,35 @@ input[type="checkbox"]:focus {
   padding-left: 0 !important;
   padding-right: 0 !important;
   margin-right: 0 !important;
+}
+
+/* Column resizer styles */
+.col-resizer {
+  display: inline-block;
+  width: 6px;
+  height: 100%;
+  cursor: col-resize;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 2;
+  background: transparent;
+  transition: background 0.2s;
+}
+.col-resizer:hover {
+  background: #bfcad6;
+}
+
+th {
+  position: relative;
+}
+
+th.checkbox-col, td.checkbox-col {
+  width: 30px !important;
+  min-width: 30px !important;
+  max-width: 30px !important;
+  text-align: center;
+  padding-left: 0;
+  padding-right: 0;
 }
 

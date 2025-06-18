@@ -2,11 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { produtos, table1, table2, table3, table4, table5, table6 } from './mock-tables';
+import { produtos, table1, table2, table3, table4, table5 } from './mock-tables';
 import { ProtheusLibCoreModule, ProAppConfigService } from '@totvs/protheus-lib-core';
 
 export interface TableItem {
-  produto: string;
   especificacao: string;
   complemento: string;
   min?: number; // Minimum value for numeric fields
@@ -14,6 +13,7 @@ export interface TableItem {
   unidade?: string; // Unit of measurement, if applicable
   parentIndex?: number; // Index of Table 8 item if applicable
   id?: string; // Unique, invisible identifier for all tables except 'Produtos' and 'ACPs'
+  produto?: string; // Only present for table 7 (ACPs)
 }
 
 export interface Table8Item {
@@ -53,8 +53,6 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-
-
     this.filteredTables = this.tables.map(table => [...table]);
   }
 
@@ -97,8 +95,8 @@ export class AppComponent implements OnInit {
         return true;
       }).map(item => ({
         produto: this.produtos[Number(table8Index)]?.produto || '', // Produto
-        especificacao: item.produto || '', // Especificação
-        complemento: item.especificacao || '', // Complemento
+        especificacao: item.especificacao || '', // Especificação
+        complemento: item.complemento || '', // Complemento
         id: (item.id || '') + '-' + (this.produtos[Number(table8Index)]?.produto || '')
       }))
     );
@@ -106,19 +104,7 @@ export class AppComponent implements OnInit {
 
   // Helper to get items for tables 1-6 filtered by selected Table 8
   getFilteredTables(): TableItem[][] {
-    // If you want to filter tables 1-6 based on the selected Table 8 (produtos) row,
-    // you can use the selectedTable8Index and the produto name as a filter key.
-    // Example: only show items whose produto matches the selected produto in Table 8.
-    const selectedProduto = this.produtos[this.selectedTable8Index]?.produto;
-    if (!selectedProduto) {
-      return this.tables;
-    }
-    // For each table, filter items by produto matching the selected Table 8 produto
-    return this.tables.map(table =>
-      table.filter(item =>
-        item.produto === selectedProduto
-      )
-    );
+    return this.tables;
   }
 
   // Handle changes to 'min' and 'max' columns in 'Químicos - por faixa' (table 2)
@@ -166,24 +152,37 @@ export class AppComponent implements OnInit {
 
   onConfirmar() {
     if (confirm('Tem certeza que deseja sair e salvar ACP?')) {
-      this.closeApp();
+      this.proAppConfigService.callAppClose();
     }
 
   }
   onCancelar() {
     if (confirm('Tem certeza que deseja sair e não salvar ACP?')) {
-      this.closeApp();
+      this.proAppConfigService.callAppClose();
     }
   }
 
-  closeApp() {
-    // Logic to close the app, e.g., navigate to a different route or close the window
-    // For example, if using Angular Router:
-    // this.router.navigate(['/home']);
-    // Or if you want to close the window:
-    window.close();
+  // Returns true if the column is a checkbox column (by header text or class)
+  isCheckboxCol(header: string): boolean {
+    return header.toLowerCase().includes('checkbox') || header.toLowerCase().includes('selecionar') || header.toLowerCase().includes('');
   }
 
-
+  // Handles column resizing
+  onResizeColumn(event: MouseEvent) {
+    const th = (event.target as HTMLElement).closest('th');
+    if (!th) return;
+    const startX = event.pageX;
+    const startWidth = th.offsetWidth;
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      const newWidth = startWidth + (moveEvent.pageX - startX);
+      th.style.width = newWidth + 'px';
+    };
+    const onMouseUp = () => {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  }
 
 }

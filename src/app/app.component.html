@@ -17,14 +17,28 @@
           <table>
             <thead>
               <tr>
-                <th class="table8-col-produto">Produto</th>
-                <th class="table8-col-quantidade">Quantidade</th>
-                <th class="table8-col-data">Data de entrega</th>
+                <th class="table8-col-id">
+                  ID
+                  <span class="col-resizer" *ngIf="!isCheckboxCol('ID')" (mousedown)="onResizeColumn($event)"></span>
+                </th>
+                <th class="table8-col-produto">
+                  Produto
+                  <span class="col-resizer" *ngIf="!isCheckboxCol('Produto')" (mousedown)="onResizeColumn($event)"></span>
+                </th>
+                <th class="table8-col-quantidade">
+                  Quantidade
+                  <span class="col-resizer" *ngIf="!isCheckboxCol('Quantidade')" (mousedown)="onResizeColumn($event)"></span>
+                </th>
+                <th class="table8-col-data">
+                  Data de entrega
+                  <span class="col-resizer" *ngIf="!isCheckboxCol('Data de entrega')" (mousedown)="onResizeColumn($event)"></span>
+                </th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let item of produtos; let i = index" [class.selected-row]="selectedTable8Index === i"
                 (click)="selectedTable8Index = i" class="table8-row">
+                <td>{{item.id}}</td>
                 <td>{{item.produto}}</td>
                 <td>{{item.quantidade}}</td>
                 <td>{{item.data}}</td>
@@ -40,9 +54,9 @@
             <table class="embalagem-table">
               <thead>
                 <tr>
-                  <th>Especificação</th>
-                  <th>Complemento</th>
-                  <th class="checkbox-col"></th>
+                  <th>Especificação <span class="col-resizer" (mousedown)="onResizeColumn($event)"></span></th>
+                  <th>Complemento <span class="col-resizer" (mousedown)="onResizeColumn($event)"></span></th>
+                  <th class="checkbox-col" style="width: 30px;"></th>
                 </tr>
               </thead>
               <tbody>
@@ -66,12 +80,12 @@
             <table>
               <thead>
                 <tr>
-                  <th>Especificação</th>
-                  <th class="checkbox-col"></th>
+                  <th>Especificação <span class="col-resizer" (mousedown)="onResizeColumn($event)"></span></th>
+                  <th class="checkbox-col" style="width: 30px;"></th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let item of getFilteredTables()[4]">
+                <tr *ngFor="let item of getFilteredTables()[1]">
                   <td>{{item.especificacao}}</td>
                   <td class="checkbox-col">
                     <label>
@@ -85,17 +99,17 @@
           </div>
         </div>
         <div class="app-table-box">
-          <h3>Logística e Transporte</h3>
+          <h3>Químicos - geral</h3>
           <div class="table-scroll">
             <table>
               <thead>
                 <tr>
-                  <th>Especificação</th>
-                  <th class="checkbox-col"></th>
+                  <th>Especificação <span class="col-resizer" (mousedown)="onResizeColumn($event)"></span></th>
+                  <th class="checkbox-col" style="width: 30px;"></th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let item of getFilteredTables()[3]">
+                <tr *ngFor="let item of getFilteredTables()[2]">
                   <td>{{item.especificacao}}</td>
                   <td class="checkbox-col">
                     <label>
@@ -116,18 +130,18 @@
             <table>
               <thead>
                 <tr>
-                  <th>Propriedade</th>
-                  <th>UM</th>
-                  <th>Mínimo</th>
-                  <th>Máximo</th>
-                  <th class="checkbox-col"></th>
+                  <th>Propriedade <span class="col-resizer" (mousedown)="onResizeColumn($event)"></span></th>
+                  <th>UM <span class="col-resizer" (mousedown)="onResizeColumn($event)"></span></th>
+                  <th>Mínimo <span class="col-resizer" (mousedown)="onResizeColumn($event)"></span></th>
+                  <th>Máximo <span class="col-resizer" (mousedown)="onResizeColumn($event)"></span></th>
+                  <th class="checkbox-col" style="width: 30px;"></th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let item of getFilteredTables()[1]; let i = index">
-                  <td>{{item.produto}}</td>
+                <tr *ngFor="let item of getFilteredTables()[3]; let i = index">
+                  <td>{{item.especificacao}}</td>
                   <td>
-                    <input class="input-numeric" [value]="item.especificacao" (input)="onUmChange(i, $event)" title="UM"
+                    <input class="input-numeric" [value]="item.unidade" (input)="onUmChange(i, $event)" title="UM"
                       placeholder="UM" />
                   </td>
                   <td>
@@ -150,18 +164,18 @@
           </div>
         </div>
         <div class="app-table-box">
-          <h3>Químicos - geral</h3>
+          <h3>Logística e Transporte</h3>
           <div class="table-scroll">
             <table>
               <thead>
                 <tr>
-                  <th>Especificação</th>
-                  <th>Complemento</th>
-                  <th class="checkbox-col"></th>
+                  <th>Especificação <span class="col-resizer" (mousedown)="onResizeColumn($event)"></span></th>
+                  <th>Complemento <span class="col-resizer" (mousedown)="onResizeColumn($event)"></span></th>
+                  <th class="checkbox-col" style="width: 30px;"></th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let item of getFilteredTables()[5]">
+                <tr *ngFor="let item of getFilteredTables()[4]">
                   <td>{{item.especificacao}}</td>
                   <td>{{item.complemento}}</td>
                   <td class="checkbox-col">
@@ -186,9 +200,18 @@
         <table class="acps-table">
           <thead>
             <tr>
-              <th class="produto-col">Produto</th>
-              <th class="especificao-col">Especificação</th>
-              <th class="complemento-col">Complemento</th>
+              <th class="produto-col">
+                Produto
+                <span class="col-resizer" (mousedown)="onResizeColumn($event)"></span>
+              </th>
+              <th class="especificao-col">
+                Especificação
+                <span class="col-resizer" (mousedown)="onResizeColumn($event)"></span>
+              </th>
+              <th class="complemento-col">
+                Complemento
+                <span class="col-resizer" (mousedown)="onResizeColumn($event)"></span>
+              </th>
             </tr>
           </thead>
           <tbody>
