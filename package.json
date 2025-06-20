@@ -21,7 +21,7 @@
     "@angular/platform-server": "^19.2.14",
     "@angular/router": "^19.2.14",
     "@angular/ssr": "^19.2.15",
-    "@po-ui/ng-components": "^19.16.0",
+    "@po-ui/ng-components": "^19.17.0",
     "@po-ui/ng-templates": "^19.16.0",
     "@totvs/protheus-lib-core": "^19.0.2",
     "express": "^4.18.2",

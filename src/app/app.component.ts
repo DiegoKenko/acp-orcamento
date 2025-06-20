@@ -104,7 +104,7 @@ export class AppComponent implements OnInit {
 
   // Helper to get items for tables 1-6 filtered by selected Table 8
   getFilteredTables(): TableItem[][] {
-    return this.tables;
+    return this.filteredTables && this.filteredTables.length ? this.filteredTables : this.tables;
   }
 
   // Handle changes to 'min' and 'max' columns in 'Químicos - por faixa' (table 2)
