@@ -46,6 +46,13 @@ export class AppComponent implements OnInit {
   globalSearch: string = '';
   filteredTables: TableItem[][] = [];
 
+  produtosColumns = [
+    { property: 'id', label: 'ID' },
+    { property: 'produto', label: 'Produto', },
+    { property: 'quantidade', label: 'Quantidade' },
+    { property: 'data', label: 'Data de entrega',  }
+  ];
+
   constructor(private proAppConfigService: ProAppConfigService) {
     if (!this.proAppConfigService.insideProtheus()) {
       this.proAppConfigService.loadAppConfig();
