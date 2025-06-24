@@ -17,27 +17,25 @@
           <table>
             <thead>
               <tr>
+                <th class="table8-col-item">Item</th>
                 <th class="table8-col-id">
                   ID
-                  <span class="col-resizer" *ngIf="!isCheckboxCol('ID')" (mousedown)="onResizeColumn($event)"></span>
                 </th>
                 <th class="table8-col-produto">
                   Produto
-                  <span class="col-resizer" *ngIf="!isCheckboxCol('Produto')" (mousedown)="onResizeColumn($event)"></span>
                 </th>
                 <th class="table8-col-quantidade">
                   Quantidade
-                  <span class="col-resizer" *ngIf="!isCheckboxCol('Quantidade')" (mousedown)="onResizeColumn($event)"></span>
                 </th>
                 <th class="table8-col-data">
                   Data de entrega
-                  <span class="col-resizer" *ngIf="!isCheckboxCol('Data de entrega')" (mousedown)="onResizeColumn($event)"></span>
                 </th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let item of produtos; let i = index" [class.selected-row]="selectedTable8Index === i"
                 (click)="selectedTable8Index = i" class="table8-row">
+                <td>{{item.item}}</td>
                 <td>{{item.id}}</td>
                 <td>{{item.produto}}</td>
                 <td>{{item.quantidade}}</td>
@@ -180,8 +178,8 @@
                   <td>{{item.complemento}}</td>
                   <td class="checkbox-col">
                     <label>
-                      <input type="checkbox" [checked]="isChecked(item)"
-                        (change)="toggleTable7(item, $any($event).target.checked)" title="Selecionar item" />
+                      <input type="checkbox" [checked]="isCheckLogistica(item)"
+                        (change)="toggleTable7Logistica(item, $any($event).target.checked)" title="Selecionar item" />
                     </label>
                   </td>
                 </tr>

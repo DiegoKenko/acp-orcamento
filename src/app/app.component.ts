@@ -14,10 +14,12 @@ export interface TableItem {
   parentIndex?: number; // Index of Table 8 item if applicable
   id?: string; // Unique, invisible identifier for all tables except 'Produtos' and 'ACPs'
   produto?: string; // Only present for table 7 (ACPs)
+  sourceTableIndex: number;
 }
 
 export interface Table8Item {
   id: string; // Unique identifier for Table 8 items
+  item: string; // Item identifier, e.g., 'MULTIBORO ACIDO BORICO F SCS'
   produto: string; // Product name
   quantidade: number; // Specification
   data: string; // Complementary information
@@ -50,12 +52,13 @@ export class AppComponent implements OnInit {
     { property: 'id', label: 'ID' },
     { property: 'produto', label: 'Produto', },
     { property: 'quantidade', label: 'Quantidade' },
-    { property: 'data', label: 'Data de entrega',  }
+    { property: 'data', label: 'Data de entrega', }
   ];
 
   constructor(private proAppConfigService: ProAppConfigService) {
     if (!this.proAppConfigService.insideProtheus()) {
       this.proAppConfigService.loadAppConfig();
+      console.log('AppConfig loaded:', this.proAppConfigService);
     }
   }
 
@@ -72,42 +75,92 @@ export class AppComponent implements OnInit {
     );
   }
 
+  isCheckLogistica(item: TableItem): boolean {
+    // For 'Logística e Transporte' items (Table 7), check if any item in the selected items matches
+    return this.table7.some(i =>
+      i.especificacao === item.especificacao &&
+      i.complemento === item.complemento
+    );
+  }
+
+  // --- Place updateTable7 before toggleTable7 for correct usage ---
+  updateTable7(uncheckedItem?: TableItem) {
+    // Aggregate all selected items from all products, setting the correct produto
+    const newItems: TableItem[] = Object.entries(this.selectedItemsByTable8).flatMap(([table8Index, items]) =>
+      items.map(item => ({
+        ...item,
+        produto: this.produtos[Number(table8Index)]?.produto || ''
+      }))
+    );
+    // Remove only the item that is being unchecked, if provided
+    if (uncheckedItem) {
+      this.table7 = this.table7.filter(existing =>
+        !(
+          existing.especificacao === uncheckedItem.especificacao &&
+          existing.complemento === uncheckedItem.complemento &&
+          existing.produto === uncheckedItem.produto
+        )
+      );
+    }
+    // Only add new items to table7, do not remove previous ones
+    newItems.forEach(newItem => {
+      const exists = this.table7.some(existing =>
+        existing.especificacao === newItem.especificacao &&
+        existing.complemento === newItem.complemento &&
+        existing.produto === newItem.produto
+      );
+      if (!exists) {
+        this.table7.push(newItem);
+      }
+    });
+  }
+
   toggleTable7(item: TableItem, checked: boolean) {
     const selected = this.selectedItemsByTable8[this.selectedTable8Index] || [];
+    const produto = this.produtos[this.selectedTable8Index]?.produto || '';
+    const itemWithProduto = { ...item, produto };
     if (checked) {
+      // Add to selectedItemsByTable8 if not present
       if (!selected.some(i => i.produto === item.produto && i.especificacao === item.especificacao && i.complemento === item.complemento)) {
         this.selectedItemsByTable8[this.selectedTable8Index] = [...selected, { ...item }];
       }
+      // Add to table7 if not present
+      const exists = this.table7.some(existing =>
+        existing.especificacao === itemWithProduto.especificacao &&
+        existing.complemento === itemWithProduto.complemento &&
+        existing.produto === itemWithProduto.produto
+      );
+      if (!exists) {
+        this.table7.push(itemWithProduto);
+      }
     } else {
+      // Remove from selectedItemsByTable8
       this.selectedItemsByTable8[this.selectedTable8Index] = selected.filter(i =>
         !(i.produto === item.produto && i.especificacao === item.especificacao && i.complemento === item.complemento)
       );
+      // Remove from table7
+      this.table7 = this.table7.filter(existing =>
+        !(
+          existing.especificacao === itemWithProduto.especificacao &&
+          existing.complemento === itemWithProduto.complemento &&
+          existing.produto === itemWithProduto.produto
+        )
+      );
     }
-    this.updateTable7();
   }
 
-  addToTable7(item: TableItem) {
-    this.toggleTable7(item, true);
+  toggleTable7Logistica(item: TableItem, checked: boolean) {
+    if (checked) {
+      // Add item to table7 if not already present
+      if (!this.table7.some(i => i.especificacao === item.especificacao && i.complemento === item.complemento)) {
+        this.table7.push({ ...item, id: item.id || '', produto: '' }); // Add empty produto for Table 7
+      }
+    } else {
+      // Remove item from table7
+      this.table7 = this.table7.filter(i => !(i.especificacao === item.especificacao && i.complemento === item.complemento));
+    }
   }
 
-  updateTable7() {
-    // Flatten all selected items for all Table 8 rows, but keep only unique items per Table 8 row and unique by id+produto
-    const seen = new Set<string>();
-    this.table7 = Object.entries(this.selectedItemsByTable8).flatMap(([table8Index, items]) =>
-      items.filter(item => {
-        // Unique key: id + produto (table8Index)
-        const key = (item.id || '') + '-' + (this.produtos[Number(table8Index)]?.produto || '');
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-      }).map(item => ({
-        produto: this.produtos[Number(table8Index)]?.produto || '', // Produto
-        especificacao: item.especificacao || '', // Especificação
-        complemento: item.complemento || '', // Complemento
-        id: (item.id || '') + '-' + (this.produtos[Number(table8Index)]?.produto || '')
-      }))
-    );
-  }
 
   // Helper to get items for tables 1-6 filtered by selected Table 8
   getFilteredTables(): TableItem[][] {

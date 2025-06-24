@@ -130,14 +130,7 @@ html, body {
   border-bottom: 2px solid #bfcad6;
 }
 
-.app-table-box tr:nth-child(even) td, .app-right-table tr:nth-child(even) td {
-  background: #f4f6fa;
-}
-.app-table-box-produtos tr:nth-child(even) td, .app-right-table tr:nth-child(even) td {
-  background: #f4f6fa;
-}
-
-.app-table-box th:last-child, .app-table-box td:last-child, .app-right-table th:last-child, .app-right-table td:last-child {
+.app-table-box th:last-child, .app-table-box td:last-child {
   width: 30px;
   min-width: 30px;
   max-width: 30px;
@@ -255,16 +248,20 @@ th {
 .table8-col-produto {
   width: 500px;
 }
+.table8-col-item {
+  width: 50px;
+  text-align: center;
+}
 .table8-col-id {
-  width: 60px;
-  max-width: 80px;
-  min-width: 40px;
+  width: 80px;
+  text-align: center;
+}
+.table8-col-quantidade {
+  width: 120px;
   text-align: center;
 }
 .table8-col-data {
-  width: 140px;
-  max-width: 200px;
-  min-width: 100px;
+  width: 120px;
   text-align: center;
 }
 
