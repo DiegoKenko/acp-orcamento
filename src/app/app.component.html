@@ -10,7 +10,8 @@
       <div class="orcamento-label">ORCAMENTO: {{ orcamento }}</div>
       <div class="global-search-bar">
         <span class="search-icon">🔍</span>
-        <input type="text" placeholder="Buscar especificação..." [(ngModel)]="globalSearch" (input)="onGlobalSearch()" />
+        <input type="text" placeholder="Buscar especificação..." [(ngModel)]="globalSearch"
+          (input)="onGlobalSearch()" />
       </div>
     </div>
     <div class="app-left-inner">
@@ -42,10 +43,14 @@
                 <td>{{item.id}}</td>
                 <td>{{item.produto}}</td>
                 <td>{{item.quantidade}}</td>
-                <td>{{item.data}}</td>
+                <td>{{item.dataEntrega}}</td>
               </tr>
             </tbody>
           </table>
+        </div>
+        <div *ngIf="loadingProdutos" class="loading-overlay">
+          <div class="spinner"></div>
+          <span>Carregando produtos...</span>
         </div>
       </div>
       <div class="app-row">
@@ -67,12 +72,16 @@
                   <td class="checkbox-col">
                     <label>
                       <input type="checkbox" [checked]="isChecked(item)"
-                        (change)="toggleTable7(item, $any($event).target.checked)" title="Selecionar item" />
+                        (change)="toggleacpsCarregadas(item, $any($event).target.checked)" title="Selecionar item" />
                     </label>
                   </td>
                 </tr>
               </tbody>
             </table>
+          </div>
+          <div *ngIf="loadingEspecificacoes" class="loading-overlay">
+            <div class="spinner"></div>
+            <span>Carregando especificações...</span>
           </div>
         </div>
         <div class="app-table-box">
@@ -91,12 +100,16 @@
                   <td class="checkbox-col">
                     <label>
                       <input type="checkbox" [checked]="isChecked(item)"
-                        (change)="toggleTable7(item, $any($event).target.checked)" title="Selecionar item" />
+                        (change)="toggleacpsCarregadas(item, $any($event).target.checked)" title="Selecionar item" />
                     </label>
                   </td>
                 </tr>
               </tbody>
             </table>
+          </div>
+          <div *ngIf="loadingEspecificacoes" class="loading-overlay">
+            <div class="spinner"></div>
+            <span>Carregando especificações...</span>
           </div>
         </div>
         <div class="app-table-box">
@@ -115,12 +128,16 @@
                   <td class="checkbox-col">
                     <label>
                       <input type="checkbox" [checked]="isChecked(item)"
-                        (change)="toggleTable7(item, $any($event).target.checked)" title="Selecionar item" />
+                        (change)="toggleacpsCarregadas(item, $any($event).target.checked)" title="Selecionar item" />
                     </label>
                   </td>
                 </tr>
               </tbody>
             </table>
+          </div>
+          <div *ngIf="loadingEspecificacoes" class="loading-overlay">
+            <div class="spinner"></div>
+            <span>Carregando especificações...</span>
           </div>
         </div>
       </div>
@@ -156,12 +173,16 @@
                   <td class="checkbox-col">
                     <label>
                       <input type="checkbox" [checked]="isChecked(item)"
-                        (change)="toggleTable7(item, $any($event).target.checked)" title="Selecionar item" />
+                        (change)="toggleacpsCarregadas(item, $any($event).target.checked)" title="Selecionar item" />
                     </label>
                   </td>
                 </tr>
               </tbody>
             </table>
+          </div>
+          <div *ngIf="loadingEspecificacoes" class="loading-overlay">
+            <div class="spinner"></div>
+            <span>Carregando especificações...</span>
           </div>
         </div>
         <div class="app-table-box">
@@ -182,22 +203,32 @@
                   <td class="checkbox-col">
                     <label>
                       <input type="checkbox" [checked]="isCheckLogistica(item)"
-                        (change)="toggleTable7Logistica(item, $any($event).target.checked)" title="Selecionar item" />
+                        (change)="toggleacpsCarregadasLogistica(item, $any($event).target.checked)"
+                        title="Selecionar item" />
                     </label>
                   </td>
                 </tr>
               </tbody>
             </table>
+            <div *ngIf="loadingEspecificacoes" class="loading-overlay">
+              <div class="spinner"></div>
+              <span>Carregando especificações...</span>
+            </div>
           </div>
         </div>
       </div>
+
     </div>
   </div>
   <!-- Right 30% -->
   <div class="app-right">
     <div class="app-right-table ">
       <h3>ACPs</h3>
-      <div class="table7-scroll">
+      <div class="table7-scroll" style="position:relative;">
+        <div *ngIf="loadingAcpsPredefinidos" class="loading-overlay">
+          <div class="spinner"></div>
+          <span>Carregando ACPs predefinidos...</span>
+        </div>
         <table class="acps-table">
           <thead>
             <tr>
@@ -216,7 +247,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of table7">
+            <tr *ngFor="let item of acpsCarregadas">
               <td>{{item.produto}}</td>
               <td>{{item.especificacao}}</td>
               <td class="complemento-col">{{item.complemento}}</td>

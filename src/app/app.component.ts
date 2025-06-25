@@ -1,29 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { produtos, table1, table2, table3, table4, table5 } from './mock-tables';
+import { table1, table2, table3, table4, table5 } from './mock-tables';
 import { ProtheusLibCoreModule, ProAppConfigService } from '@totvs/protheus-lib-core';
+import { AppDatasourceComponent } from './app.datasource.component';
+import { ModelProdutoItem } from './model.produto';
+import { ModelEspecificacao } from './model.acp';
 
-export interface TableItem {
-  especificacao: string;
-  complemento: string;
-  min?: number; // Minimum value for numeric fields
-  max?: number; // Maximum value for numeric fields
-  unidade?: string; // Unit of measurement, if applicable
-  parentIndex?: number; // Index of Table 8 item if applicable
-  id?: string; // Unique, invisible identifier for all tables except 'Produtos' and 'ACPs'
-  produto?: string; // Only present for table 7 (ACPs)
-  sourceTableIndex: number;
-}
 
-export interface Table8Item {
-  id: string; // Unique identifier for Table 8 items
-  item: string; // Item identifier, e.g., 'MULTIBORO ACIDO BORICO F SCS'
-  produto: string; // Product name
-  quantidade: number; // Specification
-  data: string; // Complementary information
-}
 
 @Component({
   selector: 'app-root',
@@ -34,21 +18,26 @@ export interface Table8Item {
 })
 export class AppComponent implements OnInit {
   title = 'acp-orcamento';
-  tables: TableItem[][] = [table1, table2, table3, table4, table5];
-  produtos: Table8Item[] = produtos;
+  tableEmba: ModelEspecificacao[] = table1;
+  tableEtic: ModelEspecificacao[] = table2;
+  tableQuig: ModelEspecificacao[] = table3;
+  tableQuie: ModelEspecificacao[] = table4;
+  tableLogs: ModelEspecificacao[] = table5;
+  produtos: ModelProdutoItem[] = [];
 
   selectedTable8Index: number = 0;
 
   orcamento: string = '';
+  empresa: string = '';
 
   // Map to track selected items for each Table 8 row
-  selectedItemsByTable8: { [key: number]: TableItem[] } = {};
+  selectedItemsByTable8: { [key: number]: ModelEspecificacao[] } = {};
 
   // Table 7 (ACPs): Aggregated, deduplicated list for the right-side table
-  table7: TableItem[] = [];
+  acpsCarregadas: ModelEspecificacao[] = [];
 
   globalSearch: string = '';
-  filteredTables: TableItem[][] = [];
+  filteredTables: ModelEspecificacao[][] = [];
 
   produtosColumns = [
     { property: 'id', label: 'ID' },
@@ -57,35 +46,78 @@ export class AppComponent implements OnInit {
     { property: 'data', label: 'Data de entrega', }
   ];
 
-  constructor(private proAppConfigService: ProAppConfigService, private http: HttpClient) {
+  especificacoes: any[] = [];
+
+  acpsPredefinidos: any[] = [];
+
+  loadingProdutos = false;
+  loadingEspecificacoes = false;
+  loadingAcpsPredefinidos = false;
+
+  constructor(
+    private proAppConfigService: ProAppConfigService,
+    private datasource: AppDatasourceComponent
+  ) {
     if (!this.proAppConfigService.insideProtheus()) {
       this.proAppConfigService.loadAppConfig();
       console.log('AppConfig loaded:', this.proAppConfigService);
     }
-    this.orcamento = sessionStorage.getItem('orcamento') || '';
+    this.orcamento = sessionStorage.getItem('orcamento') || '180729';
+    this.empresa = sessionStorage.getItem('empresa') || '01';
   }
 
-  ngOnInit() {
-    this.filteredTables = this.tables.map(table => [...table]);
-    this.fetchProdutosFromApi();
-  }
-
-  fetchProdutosFromApi() {
-    // TODO: Replace 'empresa' with actual value as needed
-    const empresa = 'empresa';
+  fetchProdutos() {
+    this.loadingProdutos = true;
+    const empresa = this.empresa;
     const orcamento = this.orcamento;
-    const url = `http://10.2.1.198:8080/rest/wsSZN/produto?empresa=${empresa}&orcamento=${orcamento}`;
-    this.http.get<Table8Item[]>(url).subscribe({
-      next: (data) => {
-        this.produtos = data;
+    this.datasource.fetchProdutos(empresa, orcamento).subscribe({
+
+      next: (res) => {
+        this.produtos = (res.data || []).map((item: any) => ModelProdutoItem.fromJson(item));
+        this.loadingProdutos = false;
       },
       error: (err) => {
+        this.loadingProdutos = false;
         console.error('Erro ao buscar produtos da API:', err);
       }
     });
   }
 
-  isChecked(item: TableItem): boolean {
+  fetchEspecificacoes() {
+    this.loadingEspecificacoes = true;
+    this.datasource.fetchEspecificacoes().subscribe({
+      next: (res) => {
+        this.especificacoes = (res.data || []).map((item: any) => ModelEspecificacao.fromJson(item));
+        this.loadingEspecificacoes = false;
+      },
+      error: (err) => {
+        this.loadingEspecificacoes = false;
+        console.error('Erro ao buscar especificações da API:', err);
+      }
+    });
+  }
+
+  fetchAcpsPredefinidos() {
+    this.loadingAcpsPredefinidos = true;
+    this.datasource.fetchAcpsPredefinidos(this.orcamento, this.empresa).subscribe({
+      next: (res) => {
+        this.acpsPredefinidos = (res.data || []).map((item: any) => ModelEspecificacao.fromJson(item));
+        this.loadingAcpsPredefinidos = false;
+      },
+      error: (err) => {
+        this.loadingAcpsPredefinidos = false;
+        console.error('Erro ao buscar itens predefinidos de ACPs:', err);
+      }
+    });
+  }
+
+  ngOnInit() {
+    this.fetchProdutos();
+    this.fetchAcpsPredefinidos();
+    this.fetchEspecificacoes();
+  }
+
+  isChecked(item: ModelEspecificacao): boolean {
     const selected = this.selectedItemsByTable8[this.selectedTable8Index] || [];
     return selected.some(i =>
       i.produto === item.produto &&
@@ -94,18 +126,18 @@ export class AppComponent implements OnInit {
     );
   }
 
-  isCheckLogistica(item: TableItem): boolean {
+  isCheckLogistica(item: ModelEspecificacao): boolean {
     // For 'Logística e Transporte' items (Table 7), check if any item in the selected items matches
-    return this.table7.some(i =>
+    return this.acpsCarregadas.some(i =>
       i.especificacao === item.especificacao &&
       i.complemento === item.complemento
     );
   }
 
-  // --- Place updateTable7 before toggleTable7 for correct usage ---
-  updateTable7(uncheckedItem?: TableItem) {
+  // --- Place updateacpsCarregadas before toggleacpsCarregadas for correct usage ---
+  updateacpsCarregadas(uncheckedItem?: ModelEspecificacao) {
     // Aggregate all selected items from all products, setting the correct produto
-    const newItems: TableItem[] = Object.entries(this.selectedItemsByTable8).flatMap(([table8Index, items]) =>
+    const newItems: ModelEspecificacao[] = Object.entries(this.selectedItemsByTable8).flatMap(([table8Index, items]) =>
       items.map(item => ({
         ...item,
         produto: this.produtos[Number(table8Index)]?.produto || ''
@@ -113,7 +145,7 @@ export class AppComponent implements OnInit {
     );
     // Remove only the item that is being unchecked, if provided
     if (uncheckedItem) {
-      this.table7 = this.table7.filter(existing =>
+      this.acpsCarregadas = this.acpsCarregadas.filter(existing =>
         !(
           existing.especificacao === uncheckedItem.especificacao &&
           existing.complemento === uncheckedItem.complemento &&
@@ -121,20 +153,20 @@ export class AppComponent implements OnInit {
         )
       );
     }
-    // Only add new items to table7, do not remove previous ones
+    // Only add new items to acpsCarregadas, do not remove previous ones
     newItems.forEach(newItem => {
-      const exists = this.table7.some(existing =>
+      const exists = this.acpsCarregadas.some(existing =>
         existing.especificacao === newItem.especificacao &&
         existing.complemento === newItem.complemento &&
         existing.produto === newItem.produto
       );
       if (!exists) {
-        this.table7.push(newItem);
+        this.acpsCarregadas.push(newItem);
       }
     });
   }
 
-  toggleTable7(item: TableItem, checked: boolean) {
+  toggleacpsCarregadas(item: ModelEspecificacao, checked: boolean) {
     const selected = this.selectedItemsByTable8[this.selectedTable8Index] || [];
     const produto = this.produtos[this.selectedTable8Index]?.produto || '';
     const itemWithProduto = { ...item, produto };
@@ -143,22 +175,22 @@ export class AppComponent implements OnInit {
       if (!selected.some(i => i.produto === item.produto && i.especificacao === item.especificacao && i.complemento === item.complemento)) {
         this.selectedItemsByTable8[this.selectedTable8Index] = [...selected, { ...item }];
       }
-      // Add to table7 if not present
-      const exists = this.table7.some(existing =>
+      // Add to acpsCarregadas if not present
+      const exists = this.acpsCarregadas.some(existing =>
         existing.especificacao === itemWithProduto.especificacao &&
         existing.complemento === itemWithProduto.complemento &&
         existing.produto === itemWithProduto.produto
       );
       if (!exists) {
-        this.table7.push(itemWithProduto);
+        this.acpsCarregadas.push(itemWithProduto);
       }
     } else {
       // Remove from selectedItemsByTable8
       this.selectedItemsByTable8[this.selectedTable8Index] = selected.filter(i =>
         !(i.produto === item.produto && i.especificacao === item.especificacao && i.complemento === item.complemento)
       );
-      // Remove from table7
-      this.table7 = this.table7.filter(existing =>
+      // Remove from acpsCarregadas
+      this.acpsCarregadas = this.acpsCarregadas.filter(existing =>
         !(
           existing.especificacao === itemWithProduto.especificacao &&
           existing.complemento === itemWithProduto.complemento &&
@@ -168,22 +200,16 @@ export class AppComponent implements OnInit {
     }
   }
 
-  toggleTable7Logistica(item: TableItem, checked: boolean) {
+  toggleacpsCarregadasLogistica(item: ModelEspecificacao, checked: boolean) {
     if (checked) {
-      // Add item to table7 if not already present
-      if (!this.table7.some(i => i.especificacao === item.especificacao && i.complemento === item.complemento)) {
-        this.table7.push({ ...item, id: item.id || '', produto: '' }); // Add empty produto for Table 7
+      // Add item to acpsCarregadas if not already present
+      if (!this.acpsCarregadas.some(i => i.especificacao === item.especificacao && i.complemento === item.complemento)) {
+        this.acpsCarregadas.push({ ...item, id: item.id || '', produto: '' }); // Add empty produto for Table 7
       }
     } else {
-      // Remove item from table7
-      this.table7 = this.table7.filter(i => !(i.especificacao === item.especificacao && i.complemento === item.complemento));
+      // Remove item from acpsCarregadas
+      this.acpsCarregadas = this.acpsCarregadas.filter(i => !(i.especificacao === item.especificacao && i.complemento === item.complemento));
     }
-  }
-
-
-  // Helper to get items for tables 1-6 filtered by selected Table 8
-  getFilteredTables(): TableItem[][] {
-    return this.filteredTables && this.filteredTables.length ? this.filteredTables : this.tables;
   }
 
   // Handle changes to 'min' and 'max' columns in 'Químicos - por faixa' (table 2)
@@ -191,7 +217,7 @@ export class AppComponent implements OnInit {
     const input = event.target as HTMLInputElement | null;
     if (input && typeof input.value === 'string') {
       const num = input.value.replace(/[^0-9.]/g, '');
-      this.tables[2][index].complemento = num;
+      this.tableQuie[index].complemento = num;
     }
   }
 
@@ -199,8 +225,8 @@ export class AppComponent implements OnInit {
     const input = event.target as HTMLInputElement | null;
     if (input && typeof input.value === 'string') {
       const num = input.value.replace(/[^0-9.]/g, '');
-      // Store max value in a new property on the TableItem if needed, or handle as required
-      (this.tables[2][index] as any).max = num;
+      // Store max value in a new property on the ModelEspecificacao if needed, or handle as required
+      (this.tableQuie[index] as any).max = num;
     }
   }
 
@@ -208,25 +234,45 @@ export class AppComponent implements OnInit {
   onUmChange(index: number, event: Event) {
     const input = event.target as HTMLInputElement | null;
     if (input && typeof input.value === 'string') {
-      this.tables[2][index].especificacao = input.value;
+      this.tableQuie[index].especificacao = input.value;
     }
   }
 
+  // Global search and filtering for all tables
   onGlobalSearch() {
-    // Remove accents and make search case-insensitive
-    const normalize = (str: string) => str.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
+    const normalize = (str: string) => str ? str.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase() : '';
     const search = normalize(this.globalSearch.trim());
     if (!search) {
-      this.filteredTables = this.tables.map(table => [...table]);
+      this.filteredTables = [
+        this.tableEmba,
+        this.tableEtic,
+        this.tableQuig,
+        this.tableQuie,
+        this.tableLogs
+      ];
       return;
     }
-    this.filteredTables = this.tables.map(table =>
+    this.filteredTables = [
+      this.tableEmba,
+      this.tableEtic,
+      this.tableQuig,
+      this.tableQuie,
+      this.tableLogs
+    ].map(table =>
       table.filter(item =>
-        Object.values(item).some(val =>
-          typeof val === 'string' && normalize(val).includes(search)
-        )
+        normalize(item.especificacao).includes(search)
       )
     );
+  }
+
+  getFilteredTables(): ModelEspecificacao[][] {
+    return this.filteredTables && this.filteredTables.length ? this.filteredTables : [
+      this.tableEmba,
+      this.tableEtic,
+      this.tableQuig,
+      this.tableQuie,
+      this.tableLogs
+    ];
   }
 
   onConfirmar() {
