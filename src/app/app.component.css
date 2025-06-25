@@ -330,4 +330,18 @@ th {
   align-self: stretch;
 }
 
+.orcamento-search-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 8px;
+  justify-content: space-between;
+}
+.orcamento-label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  white-space: nowrap;
+  margin-right: 24px;
+}
+
 

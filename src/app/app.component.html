@@ -6,9 +6,12 @@
 <div class="app-layout">
   <!-- Left 70% -->
   <div class="app-left">
-    <div class="global-search-bar">
-      <span class="search-icon">🔍</span>
-      <input type="text" placeholder="Buscar especificação..." [(ngModel)]="globalSearch" (input)="onGlobalSearch()" />
+    <div class="orcamento-search-row">
+      <div class="orcamento-label">ORCAMENTO: {{ orcamento }}</div>
+      <div class="global-search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Buscar especificação..." [(ngModel)]="globalSearch" (input)="onGlobalSearch()" />
+      </div>
     </div>
     <div class="app-left-inner">
       <div class="app-table-box-produtos">

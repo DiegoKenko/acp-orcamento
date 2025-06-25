@@ -39,6 +39,8 @@ export class AppComponent implements OnInit {
 
   selectedTable8Index: number = 0;
 
+  orcamento: string = '';
+
   // Map to track selected items for each Table 8 row
   selectedItemsByTable8: { [key: number]: TableItem[] } = {};
 
@@ -55,15 +57,32 @@ export class AppComponent implements OnInit {
     { property: 'data', label: 'Data de entrega', }
   ];
 
-  constructor(private proAppConfigService: ProAppConfigService) {
+  constructor(private proAppConfigService: ProAppConfigService, private http: HttpClient) {
     if (!this.proAppConfigService.insideProtheus()) {
       this.proAppConfigService.loadAppConfig();
       console.log('AppConfig loaded:', this.proAppConfigService);
     }
+    this.orcamento = sessionStorage.getItem('orcamento') || '';
   }
 
   ngOnInit() {
     this.filteredTables = this.tables.map(table => [...table]);
+    this.fetchProdutosFromApi();
+  }
+
+  fetchProdutosFromApi() {
+    // TODO: Replace 'empresa' with actual value as needed
+    const empresa = 'empresa';
+    const orcamento = this.orcamento;
+    const url = `http://10.2.1.198:8080/rest/wsSZN/produto?empresa=${empresa}&orcamento=${orcamento}`;
+    this.http.get<Table8Item[]>(url).subscribe({
+      next: (data) => {
+        this.produtos = data;
+      },
+      error: (err) => {
+        console.error('Erro ao buscar produtos da API:', err);
+      }
+    });
   }
 
   isChecked(item: TableItem): boolean {
