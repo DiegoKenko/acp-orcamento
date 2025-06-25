@@ -30,7 +30,7 @@ html, body {
 }
 
 .app-left {
-  flex: 0 0 70%;
+  flex: 0 0 60%;
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
@@ -182,8 +182,7 @@ html, body {
   margin-top: 22px;
   margin-bottom: 14px;
   align-self: flex-start;
-  margin-left: 18px;
-  margin-right: 0;
+  margin-left: auto;
   transition: none;
 }
 .confirm-btn:hover {
@@ -309,7 +308,7 @@ th {
 }
 
 .app-right {
-  flex: 0 0 30%;
+  flex: 0 0 40%;
   min-width: 0;
   max-width: 100%;
   width: 100%;
@@ -369,6 +368,68 @@ th {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* Ensure the remove (cross) icon button in the ACPs table has 40px width */
+.acps-table td:last-child button {
+  width: 40px;
+  min-width: 40px;
+  max-width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: none;
+  border: none;
+}
+
+.acps-table td:last-child span {
+  display: inline-block;
+  width: 24px;
+  text-align: center;
+}
+
+/* Set width for especificao-item column */
+.item-col {
+  width: 60px;
+  min-width: 60px;
+  max-width: 60px;
+  text-align: center;
+}
+
+/* Set width for produto-col column */
+.idProd-col {
+  width: 70px;
+  min-width: 70px;
+  max-width: 70px;
+  text-align: center;
+}
+
+.action-btn-col {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+  margin-bottom: 8px;
+}
+
+.cancel-btn {
+  background: #fff;
+  color: #005ca9;
+  border: 1.5px solid #bfcad6;
+  border-radius: 8px;
+  padding: 4px 18px;
+  height: 36px;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 16px 0 #bfcad6, 0 2px 8px 0 #e0e3e8;
+  margin-right: auto;
+  margin-left: 0;
+  flex: 0 0 auto;
+  max-width: 140px;
+  min-width: 100px;
+  text-align: center;
+  transition: none;
 }
 
 
