@@ -1,8 +1,8 @@
 export class ModelProdutoItem {
     constructor(
-        public id: string = '',
-        public item: string = '',
-        public produto: string = '',
+        public codProduto: string = '',
+        public seq: string = '',
+        public nomeProduto: string = '',
         public descricao: string = '',
         public preco: number = 0.0,
         public dataEntrega: string = '',

@@ -3,8 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AUTH_HEADER } from './auth';
 import { HTTP_ROUTES, HttpJsonResponse } from './httproutes';
-import { HttpResponse } from '@angular/common/http';
-import { ModelProdutoItem, ModelProdutoItemJson } from './model.produto';
+import { ModelProdutoItem } from './model.produto';
 import { ModelEspecificacao } from './model.acp';
 
 @Injectable({ providedIn: 'root' })

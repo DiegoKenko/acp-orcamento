@@ -39,9 +39,9 @@
             <tbody>
               <tr *ngFor="let item of produtos; let i = index" [class.selected-row]="selectedTable8Index === i"
                 (click)="selectedTable8Index = i" class="table8-row">
-                <td>{{item.item}}</td>
-                <td>{{item.id}}</td>
-                <td>{{item.produto}}</td>
+                <td>{{item.seq}}</td>
+                <td>{{item.codProduto}}</td>
+                <td>{{item.nomeProduto}}</td>
                 <td>{{item.quantidade}}</td>
                 <td>{{item.dataEntrega}}</td>
               </tr>
@@ -224,7 +224,7 @@
   <div class="app-right">
     <div class="app-right-table ">
       <h3>ACPs</h3>
-      <div class="table7-scroll" style="position:relative;">
+      <div class="table7-scroll">
         <div *ngIf="loadingAcpsPredefinidos" class="loading-overlay">
           <div class="spinner"></div>
           <span>Carregando ACPs predefinidos...</span>
@@ -232,6 +232,10 @@
         <table class="acps-table">
           <thead>
             <tr>
+              <th >
+                Item
+                <span class="col-resizer" (mousedown)="onResizeColumn($event)"></span>
+              </th>
               <th class="produto-col">
                 Produto
                 <span class="col-resizer" (mousedown)="onResizeColumn($event)"></span>
@@ -244,13 +248,20 @@
                 Complemento
                 <span class="col-resizer" (mousedown)="onResizeColumn($event)"></span>
               </th>
+              <th style="width: 40px;"></th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of acpsCarregadas">
-              <td>{{item.produto}}</td>
+            <tr *ngFor="let item of acpsCarregadas; trackBy: trackByItem">
+              <td>{{item.seq}}</td>
+              <td>{{item.codProduto}}</td>
               <td>{{item.especificacao}}</td>
               <td class="complemento-col">{{item.complemento}}</td>
+              <td>
+                <button (click)="removeAcpCarregadas(item)" title="Remover">
+                  <span style="color:#ff0000;font-size:11pt">&cross;</span>
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>

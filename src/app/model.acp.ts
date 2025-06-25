@@ -8,21 +8,25 @@ export class ModelEspecificacao {
         public max?: number,
         public unidade?: string,
         public tipo: TipoEspecificacao = TipoEspecificacao.none, // must always define which table
-        public produto?: string,
+        public codProduto?: string,
+        public nomeProduto?: string,
         public global: boolean = false,
+        public seq: string = ''
     ) { }
 
     static fromJson(json: any): ModelEspecificacao {
         return new ModelEspecificacao(
             json.id,
-            json.nome,
+            json.especificacao,
             json.descricao,
             json.min,
             json.max,
             json.unidade,
-            json.tipo ?? TipoEspecificacao.emba,
+            json.tipo ?? TipoEspecificacao.none,
             json.produto,
-            json.global ?? false
+            json.nomeProduto,
+            json.global ?? false,
+            json.seq ?? ''
         );
     }
 }

@@ -48,8 +48,6 @@ export class AppComponent implements OnInit {
 
   especificacoes: any[] = [];
 
-  acpsPredefinidos: any[] = [];
-
   loadingProdutos = false;
   loadingEspecificacoes = false;
   loadingAcpsPredefinidos = false;
@@ -75,6 +73,8 @@ export class AppComponent implements OnInit {
       next: (res) => {
         this.produtos = (res.data || []).map((item: any) => ModelProdutoItem.fromJson(item));
         this.loadingProdutos = false;
+
+        this.fetchAcpsPredefinidos();
       },
       error: (err) => {
         this.loadingProdutos = false;
@@ -101,8 +101,20 @@ export class AppComponent implements OnInit {
     this.loadingAcpsPredefinidos = true;
     this.datasource.fetchAcpsPredefinidos(this.orcamento, this.empresa).subscribe({
       next: (res) => {
-        this.acpsPredefinidos = (res.data || []).map((item: any) => ModelEspecificacao.fromJson(item));
+        let temp = (res.data || []).map((item: any) => ModelEspecificacao.fromJson(item));
         this.loadingAcpsPredefinidos = false;
+
+        // For each ACP, fill the seq column from the matching produto
+        temp.forEach(acp => {
+          const matchingProduto = this.produtos.find(prod => {
+            return (prod.codProduto).trimEnd() === (acp.codProduto || '').trimEnd();
+          });
+          if (matchingProduto) {
+            acp.seq = matchingProduto.seq;
+          }
+        });
+
+        this.acpsCarregadas = temp;
       },
       error: (err) => {
         this.loadingAcpsPredefinidos = false;
@@ -113,16 +125,16 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.fetchProdutos();
-    this.fetchAcpsPredefinidos();
     this.fetchEspecificacoes();
   }
 
   isChecked(item: ModelEspecificacao): boolean {
     const selected = this.selectedItemsByTable8[this.selectedTable8Index] || [];
     return selected.some(i =>
-      i.produto === item.produto &&
+      i.codProduto === item.codProduto &&
       i.especificacao === item.especificacao &&
-      i.complemento === item.complemento
+      i.complemento === item.complemento &&
+      i.seq === item.seq
     );
   }
 
@@ -140,7 +152,8 @@ export class AppComponent implements OnInit {
     const newItems: ModelEspecificacao[] = Object.entries(this.selectedItemsByTable8).flatMap(([table8Index, items]) =>
       items.map(item => ({
         ...item,
-        produto: this.produtos[Number(table8Index)]?.produto || ''
+        produto: this.produtos[Number(table8Index)]?.codProduto || '',
+        seq: this.produtos[Number(table8Index)]?.seq || ''
       }))
     );
     // Remove only the item that is being unchecked, if provided
@@ -149,7 +162,8 @@ export class AppComponent implements OnInit {
         !(
           existing.especificacao === uncheckedItem.especificacao &&
           existing.complemento === uncheckedItem.complemento &&
-          existing.produto === uncheckedItem.produto
+          existing.codProduto === uncheckedItem.codProduto &&
+          existing.seq === uncheckedItem.seq
         )
       );
     }
@@ -158,7 +172,8 @@ export class AppComponent implements OnInit {
       const exists = this.acpsCarregadas.some(existing =>
         existing.especificacao === newItem.especificacao &&
         existing.complemento === newItem.complemento &&
-        existing.produto === newItem.produto
+        existing.codProduto === newItem.codProduto &&
+        existing.seq === newItem.seq
       );
       if (!exists) {
         this.acpsCarregadas.push(newItem);
@@ -168,18 +183,22 @@ export class AppComponent implements OnInit {
 
   toggleacpsCarregadas(item: ModelEspecificacao, checked: boolean) {
     const selected = this.selectedItemsByTable8[this.selectedTable8Index] || [];
-    const produto = this.produtos[this.selectedTable8Index]?.produto || '';
-    const itemWithProduto = { ...item, produto };
+    const codProduto = this.produtos[this.selectedTable8Index]?.codProduto || '';
+    const seq = this.produtos[this.selectedTable8Index]?.seq || '';
+    const itemWithProduto = { ...item, codProduto, seq };
     if (checked) {
       // Add to selectedItemsByTable8 if not present
-      if (!selected.some(i => i.produto === item.produto && i.especificacao === item.especificacao && i.complemento === item.complemento)) {
+      if (!selected.some(function (i) {
+        return i.codProduto === item.codProduto && i.especificacao === item.especificacao && i.complemento === item.complemento && i.seq === item.seq;
+      })) {
         this.selectedItemsByTable8[this.selectedTable8Index] = [...selected, { ...item }];
       }
       // Add to acpsCarregadas if not present
       const exists = this.acpsCarregadas.some(existing =>
         existing.especificacao === itemWithProduto.especificacao &&
         existing.complemento === itemWithProduto.complemento &&
-        existing.produto === itemWithProduto.produto
+        existing.codProduto === itemWithProduto.codProduto &&
+        existing.seq === itemWithProduto.seq
       );
       if (!exists) {
         this.acpsCarregadas.push(itemWithProduto);
@@ -187,14 +206,15 @@ export class AppComponent implements OnInit {
     } else {
       // Remove from selectedItemsByTable8
       this.selectedItemsByTable8[this.selectedTable8Index] = selected.filter(i =>
-        !(i.produto === item.produto && i.especificacao === item.especificacao && i.complemento === item.complemento)
+        !(i.codProduto === item.codProduto && i.especificacao === item.especificacao && i.complemento === item.complemento && item.seq === i.seq)
       );
       // Remove from acpsCarregadas
       this.acpsCarregadas = this.acpsCarregadas.filter(existing =>
         !(
           existing.especificacao === itemWithProduto.especificacao &&
           existing.complemento === itemWithProduto.complemento &&
-          existing.produto === itemWithProduto.produto
+          existing.codProduto === itemWithProduto.codProduto &&
+          existing.seq === itemWithProduto.seq
         )
       );
     }
@@ -204,7 +224,7 @@ export class AppComponent implements OnInit {
     if (checked) {
       // Add item to acpsCarregadas if not already present
       if (!this.acpsCarregadas.some(i => i.especificacao === item.especificacao && i.complemento === item.complemento)) {
-        this.acpsCarregadas.push({ ...item, id: item.id || '', produto: '' }); // Add empty produto for Table 7
+        this.acpsCarregadas.push({ ...item, id: item.id, codProduto: item.codProduto }); // Add empty produto for Table 7
       }
     } else {
       // Remove item from acpsCarregadas
@@ -308,6 +328,19 @@ export class AppComponent implements OnInit {
     };
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
+  }
+
+  trackByItem(index: number, item: any) {
+    return item.item + '_' + item.especificacao;
+  }
+
+  removeAcpCarregadas(item: ModelEspecificacao) {
+    this.acpsCarregadas = this.acpsCarregadas.filter(i => i.seq + '_' + i.especificacao !== item.seq + '_' + item.especificacao);
+    // Uncheck in the owner table (remove from selectedItemsByTable8)
+    Object.keys(this.selectedItemsByTable8).forEach(key => {
+      const numericKey = Number(key);
+      this.selectedItemsByTable8[numericKey] = (this.selectedItemsByTable8[numericKey] || []).filter(i => i.seq + '_' + i.especificacao !== item.seq + '_' + item.especificacao);
+    });
   }
 
 }
