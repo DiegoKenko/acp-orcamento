@@ -4,8 +4,7 @@ This project is an Angular-based UI for managing technical and commercial propos
 
 ---
 
-![Uploading image.png…]()
-
+![image](https://github.com/user-attachments/assets/8b433efa-af37-4d0a-8518-738d1c262385)
 
 ---
 
@@ -25,27 +24,19 @@ This project is an Angular-based UI for managing technical and commercial propos
 4. **Search:** Use the search bar to filter items in all left tables (except ACPs).
 5. **Confirm:** Click 'Confirmar' to finalize your selections.
 
-## Project Structure
-- `src/app/app.component.ts` — Main component logic
-- `src/app/app.component.html` — UI layout
-- `src/app/app.component.css` — Styles (Protheus palette)
-- `src/app/mock-tables.ts` — Mock data for all tables
-
-## Running the Project
-1. Install dependencies:
-   ```sh
-   npm install
-   ```
-2. Start the development server:
-   ```sh
-   npm start
-   ```
-3. Open your browser at [http://localhost:4200](http://localhost:4200)
-
 ## Notes
-- No backend is required; all data is mocked.
+- No backend is required; some data is mocked.
 - The UI is fully responsive and works in modern browsers.
-- For SSR or Protheus integration, see comments in the code.
 
----
+ ## Protheus integration
+- A crucial feature for protheus integration is a key storaged in sesssion, named 'orcamento'.
+- uses protheus-lib-core. Referenced in (https://tdn.totvs.com.br/display/public/framework/Protheus-lib-core)
+- uses advplToJS function, inside /src/assets/preload
+- uses custom advpl function,as:
+  
+Static Function JsToAdvpl(oWebChannel,cType,cContent)
+	oWebChannel:AdvPLToJS('orcamento',[number])
+Return .T.
+
+
 
