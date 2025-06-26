@@ -32,11 +32,11 @@ This project is an Angular-based UI for managing technical and commercial propos
 - A crucial feature for protheus integration is a key storaged in sesssion, named 'orcamento'.
 - uses protheus-lib-core. Referenced in (https://tdn.totvs.com.br/display/public/framework/Protheus-lib-core)
 - uses advplToJS function, inside /src/assets/preload
-- uses custom advpl function,as:
+- uses custom advpl function, like this:
   
-Static Function JsToAdvpl(oWebChannel,cType,cContent)
-	oWebChannel:AdvPLToJS('orcamento',[number])
-Return .T.
+  *Static Function JsToAdvpl(oWebChannel,cType,cContent)
+	*  oWebChannel:AdvPLToJS('orcamento',[number])
+  *Return .T.
 
 
 
