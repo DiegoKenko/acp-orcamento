@@ -28,6 +28,7 @@
                 <th class="table8-col-produto">
                   Produto
                 </th>
+                <th class="table8-col-acp">ACP</th>
                 <th class="table8-col-quantidade">
                   Quantidade
                 </th>
@@ -42,6 +43,7 @@
                 <td>{{item.seq}}</td>
                 <td>{{item.codProduto}}</td>
                 <td>{{item.nomeProduto}}</td>
+                <td class="table8-col-acp"></td>
                 <td>{{item.quantidade}}</td>
                 <td>{{item.dataEntrega}}</td>
               </tr>
@@ -67,7 +69,7 @@
               </thead>
               <tbody>
                 <tr *ngFor="let item of getFilteredTables()[0]">
-                  <td>{{item.especificacao}}</td>
+                  <td>{{item.descEspecificacao}}</td>
                   <td>{{item.complemento}}</td>
                   <td class="checkbox-col">
                     <label>
@@ -91,12 +93,14 @@
               <thead>
                 <tr>
                   <th>Especificação <span class="col-resizer" (mousedown)="onResizeColumn($event)"></span></th>
+                  <th>Complemento <span class="col-resizer" (mousedown)="onResizeColumn($event)"></span></th>
                   <th class="checkbox-col checkbox-col-width"></th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let item of getFilteredTables()[1]">
-                  <td>{{item.especificacao}}</td>
+                  <td>{{item.descEspecificacao}}</td>
+                  <td>{{item.complemento}}</td>
                   <td class="checkbox-col">
                     <label>
                       <input type="checkbox" [checked]="isChecked(item)"
@@ -119,12 +123,14 @@
               <thead>
                 <tr>
                   <th>Especificação <span class="col-resizer" (mousedown)="onResizeColumn($event)"></span></th>
+                  <th>Complemento <span class="col-resizer" (mousedown)="onResizeColumn($event)"></span></th>
                   <th class="checkbox-col checkbox-col-width"></th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let item of getFilteredTables()[2]">
-                  <td>{{item.especificacao}}</td>
+                  <td>{{item.descEspecificacao}}</td>
+                  <td>{{item.complemento}}</td>
                   <td class="checkbox-col">
                     <label>
                       <input type="checkbox" [checked]="isChecked(item)"
@@ -157,19 +163,10 @@
               </thead>
               <tbody>
                 <tr *ngFor="let item of getFilteredTables()[3]; let i = index">
-                  <td>{{item.especificacao}}</td>
-                  <td>
-                    <input class="input-numeric" [value]="item.unidade" (input)="onUmChange(i, $event)" title="UM"
-                      placeholder="UM" />
-                  </td>
-                  <td>
-                    <input type="number" class="input-numeric" [value]="item.min" (input)="onMinChange(i, $event)"
-                      title="Mínimo" placeholder="min" />
-                  </td>
-                  <td>
-                    <input type="number" class="input-numeric" [value]="item.max" (input)="onMaxChange(i, $event)"
-                      title="Máximo" placeholder="max" />
-                  </td>
+                  <td>{{item.descEspecificacao}}</td>
+                  <td>{{item.unidade}}</td>
+                  <td>{{item.min}}</td>
+                  <td>{{item.max}}</td>              
                   <td class="checkbox-col">
                     <label>
                       <input type="checkbox" [checked]="isChecked(item)"
@@ -198,7 +195,7 @@
               </thead>
               <tbody>
                 <tr *ngFor="let item of getFilteredTables()[4]">
-                  <td>{{item.especificacao}}</td>
+                  <td>{{item.descEspecificacao}}</td>
                   <td>{{item.complemento}}</td>
                   <td class="checkbox-col">
                     <label>
@@ -255,8 +252,8 @@
             <tr *ngFor="let item of acpsCarregadas; trackBy: trackByItem">
               <td>{{item.seq}}</td>
               <td>{{item.codProduto}}</td>
-              <td>{{item.especificacao}}</td>
-              <td class="complemento-col">{{item.complemento}}</td>
+              <td>{{item.descEspecificacao}}</td>
+              <td class="complemento-col">{{descricao(item)}}</td>
               <td>
                 <button (click)="removeAcpCarregadas(item)" title="Remover">
                   <span class="remove-icon">&cross;</span>

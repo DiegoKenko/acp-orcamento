@@ -263,6 +263,12 @@ th {
   width: 120px;
   text-align: center;
 }
+.table8-col-acp {
+  width: 40px;
+  min-width: 40px;
+  max-width: 40px;
+  text-align: center;
+}
 
 .input-numeric {
   border: 1.5px solid #bfcad6;
@@ -387,6 +393,10 @@ th {
   display: inline-block;
   width: 24px;
   text-align: center;
+}
+
+.acps-action-col{
+  width: 50px;
 }
 
 /* Set width for especificao-item column */
