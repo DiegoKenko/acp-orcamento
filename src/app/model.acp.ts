@@ -5,8 +5,8 @@ export class ModelEspecificacao {
         public codEspecificacao: string = '',
         public descEspecificacao: string = '',
         public complemento: string = '',
-        public min: number,
-        public max: number,
+        public min: number = 0,
+        public max: number = 0,
         public unidade: string,
         public tipo: TipoEspecificacao = TipoEspecificacao.non, // must always define which table
         public codProduto?: string,
@@ -17,22 +17,24 @@ export class ModelEspecificacao {
     static fromJson(json: any): ModelEspecificacao {
         // Map string to enum value (case-insensitive, fallback to 'non')
         let tipo: TipoEspecificacao = TipoEspecificacao.non;
+        
         if (typeof json.codGrupo === 'string') {
-            const key = Object.keys(TipoEspecificacao).find(k => k.toLowerCase() === json.codGrupo.toLowerCase());
+            let grupo = json.codGrupo.toLowerCase() || json.grupo.toLowerCase() || '';
+            const key = Object.keys(TipoEspecificacao).find(k => k.toLowerCase() === grupo);
             if (key) {
                 tipo = (TipoEspecificacao as any)[key];
             }
         }
         return new ModelEspecificacao(
             json.id,
-            json.codEspecificacao,
-            json.descEspecificacao,
+            json.codEspecificacao || json.especificacao,
+            json.descEspecificacao ,
             json.complemento,
-            json.minimo,
-            json.maximo,
+            json.minimo || json.min,
+            json.maximo || json.max,
             json.um,
             tipo,
-            json.codProduto,
+            json.codProduto || json.produto || '',
         );
     }
 }

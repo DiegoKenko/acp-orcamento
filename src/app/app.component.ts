@@ -295,7 +295,7 @@ removeAcpCarregadas(item: ModelEspecificacao) {
   descricao(esp: ModelEspecificacao): string {
   if (esp.min != 0 || esp.max != 0) {
     if (esp.max == 0) {
-      return `${esp.complemento} apartir de ${esp.min}${esp.unidade} `;
+      return `${esp.complemento} a partir de ${esp.min}${esp.unidade} `;
     } else if (esp.min == 0) {
       return `${esp.complemento} até ${esp.max}${esp.unidade} `;
     } else {
