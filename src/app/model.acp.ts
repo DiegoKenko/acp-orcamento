@@ -17,7 +17,7 @@ export class ModelEspecificacao {
     static fromJson(json: any): ModelEspecificacao {
         // Map string to enum value (case-insensitive, fallback to 'non')
         let tipo: TipoEspecificacao = TipoEspecificacao.non;
-        
+
         if (typeof json.codGrupo === 'string') {
             let grupo = json.codGrupo.toLowerCase() || json.grupo.toLowerCase() || '';
             const key = Object.keys(TipoEspecificacao).find(k => k.toLowerCase() === grupo);
@@ -28,13 +28,15 @@ export class ModelEspecificacao {
         return new ModelEspecificacao(
             json.id,
             json.codEspecificacao || json.especificacao,
-            json.descEspecificacao ,
+            json.descEspecificacao,
             json.complemento,
             json.minimo || json.min,
             json.maximo || json.max,
             json.um,
             tipo,
             json.codProduto || json.produto || '',
+            json.global || false,
+            json.item || json.seq || json.sequencia || ''
         );
     }
 }

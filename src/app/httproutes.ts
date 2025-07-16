@@ -1,5 +1,5 @@
 function getServerUrl(): string {
-    return sessionStorage.getItem('environment') || 'http://10.2.1.198:8080';
+    return sessionStorage.getItem('environment') || 'http://10.2.5.7:8889';
 }
 
 export const HTTP_ROUTES = {

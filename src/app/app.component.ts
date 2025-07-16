@@ -135,6 +135,9 @@ export class AppComponent implements OnInit {
   }
 
   isChecked(item: ModelEspecificacao): boolean {
+    if (!this.selectedTable8Index || !this.produtos[this.selectedTable8Index]) {
+      return false;
+    }
     item.seq = this.produtos[this.selectedTable8Index].seq ;
     item.codProduto = this.produtos[this.selectedTable8Index].codProduto;
     const selected = this.selectedItemsByTable8[this.selectedTable8Index] || [];
